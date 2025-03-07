@@ -1,0 +1,61 @@
+services:
+  db:
+    container_name: db
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: Karma
+      MYSQL_ROOT_PASSWORD : karma
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+    ports:
+      - "5000:3306"
+    volumes:
+      - ./BackupDB.sql:/docker-entrypoint-initdb.d/BackupDB.sql
+      - data:/var/lib/mysql
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: db        
+      PMA_PORT: 3306      
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+  
+  backend:
+    build: .
+    container_name: karma-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/usr/src/app
+    depends_on:
+      - db
+    environment:
+      - NODE_ENV=development
+
+  angular:
+    build:
+      context: ../Client
+      dockerfile: Dockerfile
+    container_name: angular
+    ports:
+      - "4200:4200"
+    depends_on:
+      - backend
+    volumes:
+      - ../Client:/app
+      - /app/node_modules
+    environment:
+      - CHOKIDAR_USEPOLLING=1
+    command: npm start -- --host 0.0.0.0 --poll=2000
+
+
+
+
+volumes:
+  data :
+    driver : local
+  
