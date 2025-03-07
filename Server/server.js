@@ -19,8 +19,10 @@ app.get('/hello_world', (req, res) => {
     res.send('hello world')
 })
 
+
 app.post("/login", async (req, res) => {
     try {
+      
       const data = await mysql.createConnection({
         host: "db",
         user: "root",
@@ -40,7 +42,7 @@ app.post("/login", async (req, res) => {
       let results;
       let payload = null;
   
-      
+    
       sql = "SELECT * FROM teachers WHERE email = ?";
       [results] = await data.execute(sql, [email]);
   
@@ -52,9 +54,10 @@ app.post("/login", async (req, res) => {
         };
       } else {
         sql = `SELECT students.student_id, students.full_name, students.email, students.passwords, 
-                      years.year_name 
+                      years.year_name , student_points.total_points
                FROM students 
-               INNER JOIN years ON students.years = years.id 
+               INNER JOIN years ON students.years = years.id
+               INNER JOIN student_points ON students.student_id = student_points.student_id
                WHERE students.email = ?`;
         [results] = await data.execute(sql, [email]);
   
@@ -64,26 +67,28 @@ app.post("/login", async (req, res) => {
             full_name: results[0].full_name,
             student_id: results[0].student_id,
             years: results[0].year_name,
+            points: results[0].total_points, 
             role: "student",
           };
         }
       }
   
-     
+      
       if (!payload) {
         await data.end(); 
         return res.status(404).json({ message: "User not found" });
       }
   
+      
       const matched = await bcypt.compare(password, results[0].passwords);
       if (!matched) {
         await data.end();
         return res.status(401).json({ message: "Password not matched" });
       }
   
-     
+      // สร้าง JWT Token
       jwt.sign(payload, "1234d", { expiresIn: "2h" }, async (err, token) => {
-        await data.end();
+        await data.end(); // ปิด Connection หลังจาก Sign Token เสร็จ
         if (err) {
           return res.status(403).json({ message: err.message });
         }
@@ -95,6 +100,145 @@ app.post("/login", async (req, res) => {
       res.status(500).json({ error: "Error fetching users" });
     }
   });
+// app.post("/login", async (req, res) => {
+//   try {
+//     const data = await mysql.createConnection({
+//       host: "db",
+//       user: "root",
+//       password: "karma",
+//       database: "Karma",
+//       port: "3306",
+//     });
+//     const { email, password } = req.body; // Extract email from request body
+//     if (!email) {
+//       return res.status(400).json({ error: "Email is required" });
+//     }
+
+//     let sql;
+//     let role;
+//     let result;
+//     let payload;
+
+//     sql = "SELECT * FROM teachers WHERE email = ?"[results] = await data.query(
+//       sql,
+//       [email]
+//     );
+
+//     if (results.length > 0) {
+//       payload = {
+//         email: results[0].email,
+//         full_name: results[0].full_name,
+//         role: "teachers",
+//       };
+//     } else {
+//       sql =
+//         "SELECT students.student_id , students.full_name ,students.email ,students.passwords, years.year_name,student_points.total_points FROM students INNER JOIN years ON students.years = years.id  INNER JOIN student_points ON students.student_id = student_points.student_id WHERE students.email = ?"[
+//           results
+//         ] = await data.query(sql, [email]);
+//       if (results.length > 0) {
+//         payload = {
+//           email: results[0].email,
+//           full_name: results[0].full_name,
+//           student_id: results[0].student_id,
+//           years: results[0].year_name,
+//           points: results[0].total_points,
+//           role: "student",
+//         };
+//       }
+//     }
+
+//     const matched = await bcypt.compare(password, results[0].passwords);
+//     if (!matched) {
+//       return res.json({ message: "password not matched" });
+//     }
+
+//     await jwt.sign(payload, "1234d", { expiresIn: "2h" }, (err, token) => {
+//       if (err) {
+//         return res.status(403).json({ message: err.message });
+//       }
+//       res.status(200).json({ token, payload });
+//     });
+//   } catch (error) {
+//     console.error("Error fetching users:", error.message);
+//     res.status(500).json({ error: "Error fetching users" });
+//   }
+// });
+// app.post("/login", async (req, res) => {
+//     try {
+//       const data = await mysql.createConnection({
+//         host: "db",
+//         user: "root",
+//         password: "karma",
+//         database: "Karma",
+//         port: "3306",
+//       });
+  
+//       const { email, password } = req.body;
+  
+      
+//       if (!email || !password) {
+//         return res.status(400).json({ error: "Email and password are required" });
+//       }
+  
+//       let sql;
+//       let results;
+//       let payload = null;
+  
+      
+//       sql = "SELECT * FROM teachers WHERE email = ?";
+//       [results] = await data.execute(sql, [email]);
+  
+//       if (results.length > 0) {
+//         payload = {
+//           email: results[0].email,
+//           full_name: results[0].full_name,
+//           role: "teachers",
+//         };
+//       } else {
+//         sql = `SELECT students.student_id, students.full_name, students.email, students.passwords, 
+//                       years.year_name 
+//                FROM students 
+//                INNER JOIN years ON students.years = years.id 
+//                WHERE students.email = ?`;
+//         [results] = await data.execute(sql, [email]);
+  
+//         if (results.length > 0) {
+//           payload = {
+//             email: results[0].email,
+//             full_name: results[0].full_name,
+//             student_id: results[0].student_id,
+//             years: results[0].year_name,
+//             role: "student",
+//           };
+//         }
+//       }
+  
+     
+//       if (!payload) {
+//         await data.end(); 
+//         return res.status(404).json({ message: "User not found" });
+//       }
+  
+//       const matched = await bcypt.compare(password, results[0].passwords);
+//       if (!matched) {
+//         await data.end();
+//         return res.status(401).json({ message: "Password not matched" });
+//       }
+  
+     
+//       jwt.sign(payload, "1234d", { expiresIn: "2h" }, async (err, token) => {
+//         await data.end();
+//         if (err) {
+//           return res.status(403).json({ message: err.message });
+//         }
+//         res.status(200).json({ token, payload });
+//       });
+  
+//     } catch (error) {
+//       console.error("Error fetching users:", error.message);
+//       res.status(500).json({ error: "Error fetching users" });
+//     }
+//   });
 // app.post('/login', async (req, res) => {
 //     try {
 //         const data = await mysql.createConnection({

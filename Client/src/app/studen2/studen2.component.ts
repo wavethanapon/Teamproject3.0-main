@@ -17,6 +17,7 @@ export class Studen2Component {
   full_name: string | null = null;
   year_name: string | null = null;
   userRole: string | null = null;
+  userPoint: string | null = null;
 
   constructor(private authService: AuthService, private router: Router) {}
   
@@ -36,6 +37,7 @@ export class Studen2Component {
       this.student_id = state.payload?.student_id || null;
       this.full_name = state.payload?.full_name || null;
       this.year_name = state.payload?.years || null;
+      this.userPoint = state.payload?.points || null;
     });
   }
 
