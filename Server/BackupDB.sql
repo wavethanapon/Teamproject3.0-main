@@ -630,23 +630,25 @@ INSERT INTO `student_points` (`student_id`, `total_points`) VALUES
 --
 
 CREATE TABLE `teachers` (
-  `teachers_id` int NOT NULL,
+  `teachers_id` int NOT NULL AUTO_INCREMENT,
   `email` varchar(255) NOT NULL,
   `title` varchar(30) NOT NULL,
   `full_name` varchar(100) NOT NULL,
-  `password` varchar(255) NOT NULL
+  `passwords` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
 
 --
 -- Dumping data for table `teachers`
 --
 
-INSERT INTO `teachers` (`teachers_id`, `email`, `title`, `full_name`, `password`) VALUES
-(1, 'athasart.na@kmitl.ac.th', 'อาจารย์', 'อรรถศาสตร์ นาตเทวัญ', '$2a$12$vTgc9gHDGgAvbY3.Aq6sy.MEipoc57/Hn5eQ7M65PF5KW4UgoOrcG'),
-(2, 'jaturong.ka@kmitl.ac.th', 'นาย', 'จตุรงค์ เกตุนิมิต', '$2a$12$m7Fifz2LT28JWOzJES8J2OIovrRH9gaFYQxy.y5IaETnjKfqpJ9xu'),
-(3, 'pisakorn.si@kmitl.ac.th', 'อาจารย์', 'นภัทรพี สิทธิวัจน', '$2a$12$f4EQeoTWOUY6Y.rh3usQgu/MKpGly64Kg0MdH8Ay4Jhf6Absocz3q'),
-(4, 'rattikorn.so@kmitl.ac.th', 'อาจารย์', 'รัตติกร สมบัติเเก้ว', '$2a$12$/2Hk36oxqK2wGw0HnQMgGu7FnjPIPQSykLuiLEfONiGDFiPbX7lSq'),
-(5, 'silar.si@kmitl.ac.th', 'ว่าที่ ร.ต.', 'ศิลา ศิริมาสกุล', '$2a$12$FT9E33UicrXLWRUwl8FaDOwJsbwNGjWaorIm81c1TqYCTqqHt7.dq');
+INSERT INTO teachers (email, title, full_name, passwords) VALUES
+('athasart.na@kmitl.ac.th', 'อาจารย์', 'อรรถศาสตร์ นาตเทวัญ', '$2a$12$AZFYoG/.8eGNbUV0l17Ho.LqwJEq3rreuY89dsekULgZRNTBk.USC'),
+('jaturong.ka@kmitl.ac.th', 'นาย', 'จตุรงค์ เกตุนิมิต', '$2a$12$HUOGIiM.JL0PJaxlyMdYCuIgGfuW2BAkZHFb7antJj7.jS.FQAAgG'),
+('pisakorn.si@kmitl.ac.th', 'อาจารย์', 'นภัทรพี สิทธิวัจน', '$2a$12$mw1wqJ05eWDMPzN0XOkXt.ppDCK8uvuLm3ucNUtHh7B6pMX09z18m'),
+('rattikorn.so@kmitl.ac.th', 'อาจารย์', 'รัตติกร สมบัติเเก้ว', '$2a$12$3Q0UOeFzQ/KjyXgPPqTNUefWkggAMeC9hYW6PKk3O8GD5WjHmARi.'),
+('silar.si@kmitl.ac.th', 'ว่าที่ ร.ต. ', 'ศิลา ศิริมาสกุล ', '$2a$12$bb952SMz2Zt7FdAJkD.ZX.3wvHlOKW2PVX3AFfEQFyeMZYV7nB2Ru');
+
+
 
 -- --------------------------------------------------------
 
